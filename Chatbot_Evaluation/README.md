@@ -139,24 +139,6 @@ flowchart LR
 
 ---
 
-## 🗄️ Dataset
-
-The dataset consists of 10 Q&A pairs about AI tools and companies, stored in LangSmith:
-
-| Question | Reference Answer |
-|---|---|
-| What is LangChain? | A framework for building LLM applications |
-| What is LangSmith? | A platform for observing and evaluating LLM applications |
-| What is OpenAI? | A company that creates Large Language Models |
-| What is Hugging Face? | A company that provides tools and models for NLP |
-| What is TensorFlow? | An open-source ML framework developed by Google |
-| What is PyTorch? | An open-source ML library for deep learning |
-| What is Anthropic? | A company that develops AI systems and LLMs |
-| What is Cohere? | A company that provides language AI models and APIs |
-| What is Google? | A technology company known for search |
-| What is Mistral? | A company that creates Large Language Models |
-
----
 
 ## 🛠️ Tech Stack
 
@@ -264,10 +246,3 @@ View results at: [smith.langchain.com](https://smith.langchain.com)
 | **Concision** | A rule-based metric checking response length vs. expected length |
 | **Ground truth** | The reference (correct) answer used to benchmark the chatbot |
 
----
-
-## ⚠️ Important Notes
-
-- Designed for **Google Colab** with GPU runtime (T4 or better for Qwen2.5-7B)
-- The same model is used as both chatbot and judge — consider a stronger judge in production
-- Strip notebook outputs before sharing: `nbstripout Chatbot_Evaluation.ipynb`
