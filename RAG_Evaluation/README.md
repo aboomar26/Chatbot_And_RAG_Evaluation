@@ -45,6 +45,7 @@ The judge LLM receives a carefully structured prompt and returns a verdict.
 ---
 
 ## 🏗️ Full Evaluation Pipeline
+
 ```mermaid
 flowchart LR
 
