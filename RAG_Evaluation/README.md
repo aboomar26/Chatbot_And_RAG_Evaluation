@@ -426,15 +426,3 @@ View results at: [smith.langchain.com](https://smith.langchain.com)
 | **Evaluator function** | A Python function that scores a chatbot response (returns bool) |
 | **Experiment** | A single evaluation run tracked in LangSmith with a name/prefix |
 
----
-
-# Tech Stack
-
-| Component | Tool |
-|------------|--------|
-| LLM | Transformers |
-| Model | Qwen2.5-7B |
-| Vector DB | :contentReference[oaicite:4]{index=4} |
-| Embeddings | :contentReference[oaicite:5]{index=5} |
-| Evaluation | :contentReference[oaicite:6]{index=6} |
-| Framework | :contentReference[oaicite:7]{index=7} |
