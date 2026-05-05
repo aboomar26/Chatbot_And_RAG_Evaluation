@@ -47,27 +47,47 @@ The judge LLM receives a carefully structured prompt and returns a verdict.
 ## 🏗️ Full Evaluation Pipeline
 
 ```mermaid
-flowchart LR
+flowchart TD
 
-%% Main RAG Flow
-Q[Query<br/>(User Question)]
-C[Context<br/>(Retrieved Documents)]
-R[Response<br/>(Model Output)]
+%% Main System
+Q["Query
+(User Question)"]
+
+C["Context
+(Retrieved Documents)"]
+
+R["Response
+(Model Output)"]
 
 Q -->|Context Relevance| C
 C -->|Groundedness| R
 R -->|Answer Relevance| Q
 
+%% Descriptions
+AR["Answer Relevance:
+Does the answer address the question?"]
+
+CR["Context Relevance:
+Is the retrieved context relevant to the query?"]
+
+GR["Groundedness:
+Is the response supported by the context?"]
+
+COR["Correctness:
+Is the response close to the ground truth?"]
+
+AR -.-> R
+CR -.-> C
+GR -.-> R
+
 %% External Evaluation
-GT[Reference Answer<br/>(Ground Truth)]
+subgraph EXT["External Evaluations (Not Part of the System)"]
+    GT["Reference Answer
+    (Ground Truth)"]
+end
 
 R -.->|Correctness| GT
-
-%% Styling
-style Q fill:#e8f1ff,stroke:#2f6fed,stroke-width:2px,color:#000
-style C fill:#edf9ed,stroke:#2e9b42,stroke-width:2px,color:#000
-style R fill:#fff3e8,stroke:#ff8a00,stroke-width:2px,color:#000
-style GT fill:#f3e8ff,stroke:#7e3ff2,stroke-width:2px,color:#000
+COR -.-> GT
 ```
 
 ---
