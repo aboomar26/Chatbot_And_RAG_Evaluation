@@ -18,12 +18,46 @@ The evaluation covers **4 key metrics** that holistically measure RAG quality, a
 
 ```mermaid
 flowchart LR
-    Q["❓ User Question"] --> R["🔍 Retriever\nvector_db.similarity_search(k=5)"]
-    R --> C["📄 Retrieved Context\nTop-5 similar chunks"]
-    C --> P["📝 Prompt\nAnswer using the context..."]
-    Q --> P
-    P --> LLM["🤖 Qwen2.5-7B\nRefine Chain"]
-    LLM --> A["💬 Final Answer"]
+    U([🧑 User Question]) --> R[Retriever\nVector DB]
+    R -->|Top-K Documents| C[Context Builder]
+    U --> C
+    C --> LLM[LLM Generator\nQwen2.5-7B]
+    LLM --> A([✅ Final Answer])
+ 
+    style U fill:#4f46e5,color:#fff
+    style A fill:#16a34a,color:#fff
+    style LLM fill:#0ea5e9,color:#fff
+    style R fill:#f59e0b,color:#fff
+    style C fill:#8b5cf6,color:#fff
+```
+
+ 
+---
+ 
+## Why Evaluate RAG?
+ 
+RAG systems can fail in multiple ways. Without structured evaluation, you won't know *where* the failure happens:
+ 
+```mermaid
+flowchart TD
+    RAG[RAG System] --> F1[❌ Wrong Answer]
+    RAG --> F2[❌ Irrelevant Answer]
+    RAG --> F3[❌ Hallucinated Answer]
+    RAG --> F4[❌ Bad Retrieval]
+ 
+    F1 -->|Fix| E1[✅ Correctness Evaluation]
+    F2 -->|Fix| E2[✅ Relevance Evaluation]
+    F3 -->|Fix| E3[✅ Groundedness Evaluation]
+    F4 -->|Fix| E4[✅ Retrieval Relevance Evaluation]
+ 
+    style F1 fill:#ef4444,color:#fff
+    style F2 fill:#ef4444,color:#fff
+    style F3 fill:#ef4444,color:#fff
+    style F4 fill:#ef4444,color:#fff
+    style E1 fill:#22c55e,color:#fff
+    style E2 fill:#22c55e,color:#fff
+    style E3 fill:#22c55e,color:#fff
+    style E4 fill:#22c55e,color:#fff
 ```
 
 ---
@@ -48,46 +82,21 @@ The judge LLM receives a carefully structured prompt and returns a verdict.
 
 ```mermaid
 flowchart TD
-
-%% Main System
-Q["Query
-(User Question)"]
-
-C["Context
-(Retrieved Documents)"]
-
-R["Response
-(Model Output)"]
-
-Q -->|Context Relevance| C
-C -->|Groundedness| R
-R -->|Answer Relevance| Q
-
-%% Descriptions
-AR["Answer Relevance:
-Does the answer address the question?"]
-
-CR["Context Relevance:
-Is the retrieved context relevant to the query?"]
-
-GR["Groundedness:
-Is the response supported by the context?"]
-
-COR["Correctness:
-Is the response close to the ground truth?"]
-
-AR -.-> R
-CR -.-> C
-GR -.-> R
-
-%% External Evaluation
-subgraph EXT["External Evaluations (Not Part of the System)"]
-    GT["Reference Answer
-    (Ground Truth)"]
-end
-
-R -.->|Correctness| GT
-COR -.-> GT
+    A["🗄️ LangSmith Dataset\n10 Q&A pairs"] --> B[For each example]
+    B --> C["rag_bot()\nQwen2.5-7B answers using retrieved docs"]
+    C --> D["target() wrapper\nreturns response dict"]
+    D --> E{4 Evaluators}
+    A -- reference answer --> E
+ 
+    E --> F["✅ Correctness\nLLM-as-a-Judge vs ground truth"]
+    E --> G["📎 Groundedness\nLLM-as-a-Judge vs retrieved context"]
+    E --> H["🎯 Answer Relevance\nLLM-as-a-Judge vs question"]
+    E --> I["🔍 Retrieval Relevance\nLLM-as-a-Judge on context quality"]
+ 
+    F --> J["📊 LangSmith Dashboard\nScores + Pass Rate + Experiment History"]
+    G --> J
+    H --> J
+    I --> J
 ```
 
 ---
@@ -95,25 +104,34 @@ COR -.-> GT
 ## 📐 Evaluation Metrics (4 Metrics)
 
 RAG systems have **two components that can fail**: the retriever and the generator. The 4 metrics below cover both.
+## Full Evaluation Pipeline
 
 ```mermaid
-mindmap
-  root((RAG Evaluation))
-    Generator Quality
-      Correctness
-        Compares to ground truth
-        Requires reference answer
-      Answer Relevance
-        Did it answer the question?
-        No reference needed
-      Groundedness
-        Supported by context?
-        Catches hallucinations
-    Retriever Quality
-      Retrieval Relevance
-        Context useful for question?
-        Independent of answer
+flowchart LR
+
+Q["Query (User Question)"]
+C["Context (Retrieved Documents)"]
+R["Response (Model Output)"]
+
+Q -->|Context Relevance| C
+C -->|Groundedness| R
+R -->|Answer Relevance| Q
+
+subgraph EXT["External Evaluations (Not Part of the System)"]
+    GT["Reference Answer (Ground Truth)"]
+end
+
+R -.->|Correctness| GT
 ```
+
+### Evaluation Metrics
+
+| Metric | Description |
+|----------|-------------|
+| Context Relevance | Is the retrieved context relevant to the query? |
+| Groundedness | Is the response supported by the retrieved context? |
+| Answer Relevance | Does the answer address the original question? |
+| Correctness | Is the response close to the ground truth answer? |
 
 ---
 
